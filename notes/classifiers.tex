@@ -1,0 +1,118 @@
+% Created 2018-02-22 Thu 10:18
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{Ankur Mishra}
+\date{1/22/2018, 2/6/2017}
+\title{Classifiers}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 25.2.2 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Data Driven Approach}
+\label{sec-1}
+\begin{itemize}
+\item Collect data from internet
+\item Use ML to train an Model
+\item Evaluate Model with test data
+\end{itemize}
+\section{Nearest Neighbor Classifier}
+\label{sec-2}
+\begin{itemize}
+\item Finds objects that are similar using various functions such as Manhattan/Euclidean Distances and it finds shortest distance from them
+\item Manahattan (L1) Distance: finds absolute value difference between test and training images
+\item Euclidean (L2) Distance: finds distance by summing up square of difference between images
+\item Distances are hyperparameters
+\end{itemize}
+\subsection{k-Nearest Neighbor}
+\label{sec-2-1}
+Finds k nearest images, which has a vote for the label, where k is a hyperparametersl
+\begin{itemize}
+\item Non-Parametric - No Defined Number of Parameters
+\item Never used on images as it has awful test time and distance metrics are unintuitive
+\end{itemize}
+\section{Linear Classification}
+\label{sec-3}
+\subsection{Parametric Approach}
+\label{sec-3-1}
+Function that outputs $W$ parameters from input $x$. 
+\begin{equation}
+f(x, W)
+\end{equation}
+\subsection{Linear Classifier}
+\label{sec-3-2}
+A linear classifier draws a line and if a point is above the line it is not the class and if it is 
+below the line then it is the class. The value along the line is 0. The line's equation/the score function would be:
+\begin{equation}
+f(x, W) = Wx + b
+\end{equation}
+For an example of an image classifier that has 10 parameters, $f(x, W)$  would be a 10x1 matrix, 
+$W$ would be a 10x3072, and $x$ would be a 3072x1. Bias $b$ and also  would be a 10x1 matrix. 
+Matrix multiplication results in the 10x1 matrix.
+\subsection{Loss Function}
+\label{sec-3-3}
+Used to find a W which minimizes loss
+\subsubsection{Muliclass SVM Loss}
+\label{sec-3-3-1}
+\begin{equation}
+L_i = \sum_{j \neq y_i} max(0, s_j - s_y_i + 1)
+\end{equation}
+$j$ is the object with the highest score. $y_i$ is the object which is trying to be classified.
+The loss of the function itself is:
+\begin{equation}
+L = 1/N  \sum_{i=1}^{N} L_i 
+\end{equation}
+\subsubsection{Weight Regularization}
+\label{sec-3-3-2}
+Weight regulaztion functions are used to favor weights that are more consistent/bring out more features. 
+If I had a vector x which was \$[1,1,1,1], the loss of both scoring vectors \$[1,0,0,0] and $[.25,.25,.25,.25]$ would have the same loss of 1.
+However, with regularization implemented, the second vector would be favored as it observes more features than 
+the first that only detects the first feature. In general it makes test data better.
+An equation of a loss function with regularization is:
+\begin{equation}
+L = 1/N  \sum_{i=1}^{N} L_i + \lambda*R(W)
+\end{equation}
+$\lambda$ changes the strength of the regularization
+\begin{enumerate}
+\item L2 Regularization
+\label{sec-3-3-2-1}
+Most common form regularization
+\begin{equation}
+R(W) = \sum_{k} \sum_{l} W_{k,l}^2
+\end{equation}
+\end{enumerate}
+\subsubsection{Softmax Classifier}
+\label{sec-3-3-3}
+Scores are unnormalized log probabilities of the classes. Probability of class k is:
+\begin{equation}
+P(Y=k | X=x_i) = (e^s_k)/ (\sum_{j} e^s_j) 
+\end{equation}
+where $s = f(x_i; W)$
+\subsubsection{Loss Function}
+\label{sec-3-3-4}
+Minimize negative log likelihood of 
+\begin{equation}
+L_i = -log((e^s_y_i)/ (\sum_{j} e^s_j) )
+\end{equation}
+Max is 0, Min is $-\infty$.
+% Emacs 25.2.2 (Org mode 8.2.10)
+\end{document}

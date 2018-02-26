@@ -1,0 +1,71 @@
+#+TITLE: Classifiers
+#+AUTHOR: Ankur Mishra
+#+DATE: 1/22/2018, 2/6/2017
+* Data Driven Approach
+- Collect data from internet
+- Use ML to train an Model
+- Evaluate Model with test data
+* Nearest Neighbor Classifier
+- Finds objects that are similar using various functions such as Manhattan/Euclidean Distances and it finds shortest distance from them
+- Manahattan (L1) Distance: finds absolute value difference between test and training images
+- Euclidean (L2) Distance: finds distance by summing up square of difference between images
+- Distances are hyperparameters
+** k-Nearest Neighbor
+Finds k nearest images, which has a vote for the label, where k is a hyperparametersl
+- Non-Parametric - No Defined Number of Parameters
+- Never used on images as it has awful test time and distance metrics are unintuitive
+* Linear Classification
+** Parametric Approach
+Function that outputs $W$ parameters from input $x$. 
+\begin{equation}
+f(x, W)
+\end{equation}
+** Linear Classifier
+A linear classifier draws a line and if a point is above the line it is not the class and if it is 
+below the line then it is the class. The value along the line is 0. The line's equation/the score function would be:
+\begin{equation}
+f(x, W) = Wx + b
+\end{equation}
+For an example of an image classifier that has 10 parameters, $f(x, W)$  would be a 10x1 matrix, 
+$W$ would be a 10x3072, and $x$ would be a 3072x1. Bias $b$ and also  would be a 10x1 matrix. 
+Matrix multiplication results in the 10x1 matrix.
+** Loss Function
+Used to find a W which minimizes loss
+*** Muliclass Support Vector Machine Loss
+\begin{equation}
+L_i = \sum_{j \neq y_i} max(0, s_j - s_y_i + 1)
+\end{equation}
+$j$ is the object with the highest score. $y_i$ is the object which is trying to be classified.
+The loss of the function itself is:
+\begin{equation}
+L = 1/N  \sum_{i=1}^{N} L_i 
+\end{equation}
+*** Weight Regularization
+Weight regulaztion functions are used to favor weights that are more consistent/bring out more features. 
+If I had a vector x which was $[1,1,1,1], the loss of both scoring vectors $[1,0,0,0] and $[.25,.25,.25,.25]$ would have the same loss of 1.
+However, with regularization implemented, the second vector would be favored as it observes more features than 
+the first that only detects the first feature. In general it makes test data better.
+An equation of a loss function with regularization is:
+\begin{equation}
+L = 1/N  \sum_{i=1}^{N} L_i + \lambda*R(W)
+\end{equation}
+\lambda changes the strength of the regularization
+**** L2 Regularization
+Most common form regularization
+\begin{equation}
+R(W) = \sum_{k} \sum_{l} W_{k,l}^2
+\end{equation}
+** Softmax Classifier
+Scores are unnormalized log probabilities of the classes. Probability of class k is:
+\begin{equation}
+P(Y=k | X=x_i) = (e^s_k)/ (\sum_{j} e^s_j) 
+\end{equation}
+where $s = f(x_i; W)$
+*** Loss Function
+Minimize negative log likelihood of 
+\begin{equation}
+L_i = -log((e^s_y_i)/ (\sum_{j} e^s_j) )
+\end{equation}
+Max is 0, Min is $-\infty$.
+*** Differences between Multiclass SVM Loss 
+SVM doesnt care about changes in scoring
