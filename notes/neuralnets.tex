@@ -1,0 +1,65 @@
+% Created 2018-02-26 Mon 14:58
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{Ankur Mishra}
+\date{1/22/2018, 2/6/2017}
+\title{Neural Networks}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 25.2.2 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Optimization}
+\label{sec-1}
+\subsection{Two strategies}
+\label{sec-1-1}
+\begin{enumerate}
+\item Random Search\\
+\label{sec-1-1-0-1}
+Randomly look through weights and record the W that returns the lowest loss. In a nutshell this is
+guess and check, which pretty much sucks, but slightly better than baseline (10\% < 15\%).
+\item Gradient Descent\\
+\label{sec-1-1-0-2}
+Computing the slope accross every single direction; derivative. In multiple dimensions, the gradient is a vector of
+partial derivatives. It can be done numerically and analytically.In general, always use analytic gradients, but check if it is right with numeric gradients; also known as
+a gradient check. 
+\begin{enumerate}
+\item Numerically Gradient\\
+\label{sec-1-1-0-2-1}
+Computing it can be thought as taking really small steps and finding the slope (Difference In Losses/Distance Between Points).\\
+Evaluating numerically is approximate and very slow, so don't do it. They are just easy to write.
+\item Analytic Gradient\\
+\label{sec-1-1-0-2-2}
+Taking Derivatives \\
+These are exact and very fast, but tricky to implement.\\
+\end{enumerate}
+\end{enumerate}
+\subsection{Mini-Batch Gradient Descent}
+\label{sec-1-2}
+Using small sections of training set to compute gradient. This is faster and better for the overall network 
+and also creates noise which is better for optimization. Full-Batch will just give a straight line.\\
+Common Sizes: 32, 64, 128.
+Usually start with high learning rate and decays over time/epochs.
+\section{Backpropagation}
+\label{sec-2}
+% Emacs 25.2.2 (Org mode 8.2.10)
+\end{document}
