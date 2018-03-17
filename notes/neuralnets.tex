@@ -1,4 +1,4 @@
-% Created 2018-02-26 Mon 14:58
+% Created 2018-03-11 Sun 00:26
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -17,7 +17,7 @@
 \usepackage{hyperref}
 \tolerance=1000
 \author{Ankur Mishra}
-\date{1/22/2018, 2/6/2017}
+\date{2/26/18}
 \title{Neural Networks}
 \hypersetup{
   pdfkeywords={},
@@ -40,7 +40,7 @@ guess and check, which pretty much sucks, but slightly better than baseline (10\
 \item Gradient Descent\\
 \label{sec-1-1-0-2}
 Computing the slope accross every single direction; derivative. In multiple dimensions, the gradient is a vector of
-partial derivatives. It can be done numerically and analytically.In general, always use analytic gradients, but check if it is right with numeric gradients; also known as
+partial derivatives. It can be done numerically and analytically. In general, always use analytic gradients, but check if it is right with numeric gradients; also known as
 a gradient check. 
 \begin{enumerate}
 \item Numerically Gradient\\
@@ -49,8 +49,7 @@ Computing it can be thought as taking really small steps and finding the slope (
 Evaluating numerically is approximate and very slow, so don't do it. They are just easy to write.
 \item Analytic Gradient\\
 \label{sec-1-1-0-2-2}
-Taking Derivatives \\
-These are exact and very fast, but tricky to implement.\\
+Taking Derivatives. These are exact and very fast, but tricky to implement.\\
 \end{enumerate}
 \end{enumerate}
 \subsection{Mini-Batch Gradient Descent}
@@ -59,7 +58,215 @@ Using small sections of training set to compute gradient. This is faster and bet
 and also creates noise which is better for optimization. Full-Batch will just give a straight line.\\
 Common Sizes: 32, 64, 128.
 Usually start with high learning rate and decays over time/epochs.
-\section{Backpropagation}
+\section{Neural Networks}
 \label{sec-2}
+\subsection{Backpropagation}
+\label{sec-2-1}
+Way of computing the influence of every value on a computational graph by recursively using multivariable chain 
+rule through the graph. \\ \\
+Chain Rule: $dL/dx = dL/dz * dz/dx$ \\ \\
+You can break your backprop into other functions and find their derivatives. An example of this is breaking 
+$\frac{1}{1+e^{-(w_0x_0+w_1x_1+w_2)}}$ into the sigmoid function: $\frac{1}{1+e^{-x}}$
+\begin{itemize}
+\item plus (+) gate distrubutes gradients equally
+\item max gate routes gradient to max
+\item multiply (*) switches inputs and multiplies each by global gradient, equal inputs are picked arbitrarily
+\end{itemize}
+If two gradients combine when backpropagating --> add their gradients
+Linear Score Function: $f = W*x$ \\
+Two Layer Neural Network: $f = W_2 *max(0,W_1*x)$ \\ or Three Layers N-Network $f = W_3*max(W_2*max(0,W_1*x))$ \\
+Bigger Networks are more powerful.\\
+\subsection{Activation Functions}
+\label{sec-2-2}
+\subsubsection{Sigmoid Function}
+\label{sec-2-2-1}
+Equation: $o(x) = \frac{1}{1+e^{-x}}$ \\ Historically the most popular since the implementation has a saturating
+firing rate. It squashes a number between 0 to 1.\\
+Issues:
+\begin{enumerate}
+\item Saturated neurons kill gradients \\
+\label{sec-2-2-1-1}
+Only flows in the active region. If values are relatively high or low, gradients will only come out to be 0. Also drastically different inputs may come out to same outputs.
+\item Outputs aren't 0 centered \\
+\label{sec-2-2-1-2}
+It doesn't converge as nicely. Integral of region comes out to 0.
+\item Compute Time is Longer for Exponential Functions
+\label{sec-2-2-1-3}
+\end{enumerate}
+\subsubsection{tanh(x) Function}
+\label{sec-2-2-2}
+Is zero centered, range is between [-1, 1], and is 0 centered. Still has issue of killing gradients like sigmoid.
+\subsection{Rectified Linear Unit (ReLU)}
+\label{sec-2-3}
+Equation: $f(x) = max(0,x)$ \\ Current standard for activiation functions, as it remedies most of tanh(x) and sigmoids problems, as it
+does not saturate (in + region) and is much more efficient. Still has issues:
+\begin{enumerate}
+\item Not Zero Centered
+\label{sec-2-3-0-1}
+\item Kills Gradients which x < 0
+\label{sec-2-3-0-2}
+\item Some initialization results in dead ReLUs
+\label{sec-2-3-0-3}
+If a neuron is not in activation region, it will die and never update. 
+To fix people initialize slightly positive biases like .01; though not always effective.
+\subsubsection{Leaky ReLU / Parametric ReLU}
+\label{sec-2-3-1}
+Leaky ReLU equation $f(x)=max(.01x, x)$. Parametric ReLU equation: $f(x)=max(\alpha x, x)$, where
+$\alpha$ is a parameter that can be learned according to the network. These two maintain all the perks of
+ReLU and do not die, but still aren't amazing. Also aren't zero centered.
+\subsubsection{Exponential Linear Units}
+\label{sec-2-3-2}
+Exponential ReLU has all the benefits of ReLU, don't die, and closer to zero mean outputs, but compution for
+exponential takes time.
+\begin{equation}
+\text{Equation:}\ f(x) =  
+      \begin{cases}
+          x, & \text{if}\ x > 0 \\
+          \alpha  (exp(x) - 1), & \text{if}\ x \leq 0
+      \end{cases}
+\end{equation}
+\subsection{Image Pre-processing}
+\label{sec-2-4}
+Commonly pre-processing of images is done by mean centering. This either means to to subtract the mean
+value of each pixel by a [32,32,3] array, or to find the per-channel mean, which is subtract the mean from each
+pixel's RGB channels.
+\subsection{Weight Initialization}
+\label{sec-2-5}
+Setting weights to 0 will return 0 throughout network. Even .01 returns near zero values over the last few 
+layers of a network in both forward and backward pass, which is known as vanishing gradient. Setting weight to 1, will supersaturate network, as all neurons come out as -1 or 1. The solution is Xavier initialization.
+\subsubsection{Xavier Initialization}
+\label{sec-2-5-1}
+W = np.random.randn(fan$_{\text{in}}$, fan$_{\text{out}}$) / np.sqrt(fan$_{\text{in}}$) for tanh(x). This breaks when using ReLU, so use
+W = np.random.randn(fan$_{\text{in}}$, fan$_{\text{out}}$) / np.sqrt(fan$_{\text{in}}$ / 2) for ReLU.
+\subsection{Batch Normalization}
+\label{sec-2-6}
+This is to normalize data where you apply this equation to each layer:
+$$\hat{x}^{(k)} = \frac{x^{(k)} - E[x^{(k)}]}{\sqrt{(Var(x^{(k)}))}}$$ 
+Which is a vanilla differentiable function. What it does is it computes the mean of every feature and then divides by it.
+$$ y^{(k)} = \gamma^{(k)} \hat{x}^{(k)} + \beta^{(k)}$$
+After this the function scaled by $\gamma$ and then is shifted by $\beta$, which changes the range if the network wants to. Through learning the network can either learn
+to take it out or take advantage of it. \\
+The general process of this is first the  mini-batch mean is computed, then its variance. 
+Using these two things, the values are normalized and finally are scaled and shifted.
+\subsubsection{Perks of Using It}
+\label{sec-2-6-1}
+\begin{enumerate}
+\item Improves Gradient Flow
+\label{sec-2-6-1-1}
+\item Allows for High Learning Rates
+\label{sec-2-6-1-2}
+\item Reduces dependence on strong weight initialization
+\label{sec-2-6-1-3}
+\item Acts like regularization and slightly reduces need for dropout
+\label{sec-2-6-1-4}
+\end{enumerate}
+\subsection{Debugging Training}
+\label{sec-2-7}
+\begin{enumerate}
+\item Check if loss is reasonable \\
+\label{sec-2-7-0-1}
+First disable regularization, and check loss. Then increase regularation, and check loss. If you are doing it right, the loss will
+also go up. \\ Then check if you can overfit your data with a small portion of your data-set with no regularation, by getting
+a loss/cost goes to 0 and accuracy is 100\%.
+\item Your Learning Rate Should be Between 1e-3 to 1e-5
+\label{sec-2-7-0-2}
+\end{enumerate}
+\subsection{Parameter Updates}
+\label{sec-2-8}
+\subsubsection{Simple Gradient Descent}
+\label{sec-2-8-1}
+Get Batch, Calculate Loss with Forward Pass, then Calculate Gradient with Backward Pass, and then perform parameter update. 
+This however is the slowest way of training, as it has trouble progressing as it gets deeper in its training.
+\subsubsection{Momentum}
+\label{sec-2-8-2}
+Momentum improves in the spot where SGD fails, by giving the update "momentum." It uses a fraction $\mu$ to slow down and converge to its goal.
+The equation for it is: $$v_t = \mu * v_{t-1} - \alpha \nabla f(\theta_{t-1})$$
+$$Physical Representation$$
+In general this usually overshoots and then converges to the expected loss. The velocity starts at 0 and it builds up.
+\subsubsection{Nesterov Accelerated Gradient}
+\label{sec-2-8-3}
+Like regular momentum update, but it does a look ahead gradient step from the position of the momentum gradient
+which results in faster convergence. The velocity function looks like this: $$v_(t) = \mu  v_{t-1} - \alpha \nabla f(\theta_{t-1} _ \mu v_{t-1})$$
+\subsubsection{AdaGrad}
+\label{sec-2-8-4}
+In AdaGrad, there is a cache being built up for each element, which is the sum of all seen the gradients squared, which is sometimes referred as the uncentered 2nd moment.
+Then the parameter is performed like SGD except it is divided by the root of the cache of the current element. IT is called a per-parameter update as each dimension has its own 
+special learning rate scaled by all the gradients it has seen. This cache decays the learning rate to 0 over time, which isn't optimal for a neural network. The equation of the parameter update is:
+\$\$
+\subsubsection{RMSProp}
+\label{sec-2-8-5}
+Adagrad with a leaky cache that has decay rate, which makes it slightly better than AdaGrad. Also usually with NN, adagrad has tendency to stop earlier due to it ending learning.
+\subsubsection{Adam}
+\label{sec-2-8-6}
+Combination of Momentum and RMSProp. Good for default cases.
+\subsubsection{Hessian and L-BFGS}
+\label{sec-2-8-7}
+All of the previous updates use a learning rate hyperparameter; these don't.
+\subsection{Learning Rates}
+\label{sec-2-9}
+A good learning rate starts off very high, but becomes pretty low after the intial training.
+\subsubsection{Step Decay}
+\label{sec-2-9-1}
+Learning rate is halved, every few epochs.
+\subsubsection{Exponential Decay}
+\label{sec-2-9-2}
+$$\alpha = \alpha_0 e^{-kt}$$
+\subsubsection{1/t Decay}
+\label{sec-2-9-3}
+$$\alpha = \frac{\alpha_0}{1+kt} $$
+\subsection{Regularization: Drop-out}
+\label{sec-2-10}
+\section{Convolutional Neural Networks}
+\label{sec-3}
+\subsection{Basics}
+\label{sec-3-1}
+Convolutions have height, width, and depth. Convolutional layer is the building block to a CNN.
+Take a filter and slide it accross the image, while computing dot products (convolve). This creates an
+activation map, whose dimensions are calculated by the number of distinct position it crosses. This is repeated
+for each filter and the the number of repeats will result in your new depth. If there is another the convolutional layer,
+then each filters depth will be the same as the new depth of the activation map. \\
+Over each level of convolution a group of interesting pieces will be developed, and deeper levels will create templates for features
+found in the image. \\
+In the activiation map, white corresponds to high activiations and blacker shades mean lower activations.
+\subsubsection{General Process}
+\label{sec-3-1-1}
+An image is processed by a convolutional layer, then a RELU layer and then it is repeated. After that, you pool it. Then after a certain number of convolutional layers, there is a fully connected layer at the end that will
+score the image accordingly.
+\begin{enumerate}
+\item Takes Volume of Size $W_1 x H_1 x D_1$
+\label{sec-3-1-1-1}
+\item Takes Four Hyper Parameters
+\label{sec-3-1-1-2}
+\begin{enumerate}
+\item Number of Filters K
+\label{sec-3-1-1-2-1}
+\item Their Spatial Extent F
+\label{sec-3-1-1-2-2}
+\item The Stride S
+\label{sec-3-1-1-2-3}
+\item The amount of 0 Padding P
+\label{sec-3-1-1-2-4}
+\end{enumerate}
+\item Produces Volume of Size $W_2 x H_2 x D_2$
+\label{sec-3-1-1-3}
+\begin{enumerate}
+\item $W_2 = \frac{W_1 + F + 2P}{S} + 1$
+\label{sec-3-1-1-3-1}
+\item $H_2 = \frac{H_1 + F + 2P}{S} + 1$
+\label{sec-3-1-1-3-2}
+\item $D_2 = K$
+\label{sec-3-1-1-3-3}
+\end{enumerate}
+\item The number of parameters = (filter dimensions + 1$_{\text{(for bias)}}$) * (number of filters)
+\label{sec-3-1-1-4}
+\end{enumerate}
+\subsection{Spatial Dimensions}
+\label{sec-3-2}
+\subsubsection{Strides}
+\label{sec-3-2-1}
+$\frac{N-F}{stride} + 1$
+\subsubsection{Padding}
+\label{sec-3-2-2}
+Adding zero padded border for convenience as each layer stays the same dimensions and also the dimensions dont get smaller.
 % Emacs 25.2.2 (Org mode 8.2.10)
 \end{document}

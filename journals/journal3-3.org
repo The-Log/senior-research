@@ -1,0 +1,14 @@
+#+TITLE: Journal 3-3
+#+AUTHOR: Ankur Mishra
+#+DATE: February 2018
+* Timeline
+* Progress
+This week I worked on smoe basic vision algorithmns for from Karapathy's CS231n Lectures, including kNN and a basic linear classifier, with the Multiclass SVM Loss function. 
+I didn't get around to covering all the next lectures I planned, since I was out on Monday, but I was able to cover Regularization. This week, I will have to play some catchup this week and also try to cover 
+some additional lectures that I had originally planned.
+\par
+During this week's lecture I learned about regularization functions like L2, which are use to determine
+determine which vectors bring out more features of the original input. With a regularization function implemented,
+if a vector $x$ was [1,1,1,1], the loss function would favor scores such as
+[.25,.25,.25,.25] over [1,0,0,0]
+

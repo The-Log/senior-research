@@ -1,0 +1,54 @@
+% Created 2018-02-13 Tue 10:20
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{Ankur Mishra}
+\date{February 2018}
+\title{Journal 3-2}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 25.2.2 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Timeline}
+\label{sec-1}
+\section{Progress}
+\label{sec-2}
+This week I continued researching Linear Classification from Karapathy's CS231n Lectures. 
+I learned about basic loss functions, such as Muliclass SVM Loss and made my own linear classifier in Python. Here is an excerpt from some notes I took 
+while watching his lecture:
+\subsection{Muliclass SVM Loss}
+\label{sec-2-1}
+\begin{equation}
+L_i = \sum_{j \neq y_i} max(0, s_j - s_y_i + 1)
+\end{equation}
+$j$ is the object with the highest score. $y_i$ is the object which is trying to be classified.
+The loss of the function itself is:
+\begin{equation}
+L = 1/N  \sum_{i=1}^{N} L_i
+\end{equation}
+\section{Project Discussion}
+\label{sec-3}
+Since progress has slowed since I got sick and last week we had vistors, I'm pushing my goal from last week to have a functional object detection algorithm 
+by another two weeks. I will also have to work a little outside of class to account for some missed time but I hope to catch up so that I can get closer to my original deadline.
+Also, I have to start working on making my code work along side my agent this week.
+% Emacs 25.2.2 (Org mode 8.2.10)
+\end{document}

@@ -1,0 +1,15 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /home/ankur/Development/senior-research/notes/neuralnets.org
+
+
+* Momentum
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2018-03-06 Tue 09:57
+  :ARCHIVE_FILE: ~/Development/senior-research/notes/neuralnets.org
+  :ARCHIVE_OLPATH: Neural Networks/Parameter Updates
+  :ARCHIVE_CATEGORY: neuralnets
+  :END:
+A way of fixing this is to use v, which equals $\mu * v - \text{learning_rate} * dx$.
+

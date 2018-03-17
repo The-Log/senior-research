@@ -1,0 +1,13 @@
+#+TITLE: Journal 3-4
+#+AUTHOR: Ankur Mishra
+#+DATE: February 27, 2018
+* Timeline
+* Progress
+This start of this week, I finished up loss functions, learning about SoftMax and how it functions relative 
+to Multiclass SVM Loss Functions. I also transitioned into implementing object detection in VizDoom and this is my
+current progress in detecting general objects in Doom, but I have yet to implement a classifier over my 
+Doom. You can see all the green boxes are signifant data that would be important to detect to play the game, such as your 
+current weapon at hand, it detects health packs and ammo, and most enemies. \\
+My hopes for next week is to implement a form of object detection like SSD.Pytorch or pytorch-yolo2 over this to framework
+to complete the detection. Based on this detection, I also hope to have agent that is able to do basic actions based on
+what it sees (shoot enemys, dodge fireballs, etc.). Then I would to move on to actual training. 

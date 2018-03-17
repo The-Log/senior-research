@@ -1,0 +1,13 @@
+#+TITLE: Training Agents Using Deep Reinforcement Learning and Asynchronous Actor-Critic Agents
+#+AUTHOR: Ankur Mishra
+#+DATE: 08/31/2017
+
+* Introduction
+** Overview
+My project aims to investigate an algorithm that can play an Atari game using deep reinforcement learning and asynchronous actor-critic agents (A3C).
+Although this task has been done before with just deep reinforcement learning other agents, I aim to use the A3C algorithm which has been rendered some success in other Deep Reinforcement Learning environments. To set up the agent, I will be using the OpenAI Gym to set up the training environment and TensorFlow to do the actual Deep Learning part.
+** Timeline
+1) I plan to get a better overview of how Deep Learning works, getting a better grasp of Markov Decision Process.
+2) Make a basic implementation of a deep learning algorithm using the OpenAI Gym of CartPole and Deep Q Network.
+3) Based off the previous step, I will try applying the RL algorithm on the game Space Invaders, modifying it as needed.
+

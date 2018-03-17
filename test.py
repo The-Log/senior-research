@@ -10,7 +10,7 @@
 
 from __future__ import print_function
 import matplotlib.pyplot as plt
-
+import h5py
 from time import sleep
 from vizdoom import *
 import numpy as np
@@ -27,12 +27,12 @@ game = DoomGame()
 # game.load_config("../../scenarios/rocket_basic.cfg")
 # game.load_config("../../scenarios/deadly_corridor.cfg")
 game.load_config("deathmatch.cfg")
-game.set_doom_scenario_path('3d.wad')
+game.set_doom_scenario_path('D3-tx_battle_99maps.wad')
 # game.set_doom_scenario_path('/home/tensorpro/wads/testingnd.wad')
 # game.set_sound_enabled(True)
 # game.set_doom_scenario_path('/home/tensorpro/wads/o7/tech.wad')
 # game.set_doom_scenario_path('/home/tensorpro/wads/3d/1.wad')
-game.set_doom_map('MAP04')
+game.set_doom_map('MAP49')
 # game.load_config("../../scenarios/defend_the_center.cfg")
 # game.load_config("../../scenarios/defend_the_line.cfg")
 # game.load_config("../../scenarios/health_gathering.cfg")
@@ -79,7 +79,7 @@ cv2.floodFill
 #game.set_doom_map('map02')
 game.set_screen_format(ScreenFormat.RGB24)
 game.set_screen_resolution(ScreenResolution.RES_1920X1080)
-# game.set_screen_resolution(ScreenResolution.RES_640X480)
+#game.set_screen_resolution(ScreenResolution.RES_640X480)
 game.set_render_crosshair(True)
 # Enables spectator mode, so you can play. Sounds strange but it is the agent who is supposed to watch not you.
 game.set_window_visible(True)
@@ -91,7 +91,7 @@ game.set_automap_buffer_enabled(True)
 
 
 randomize=1
-game.send_game_command("pukename set_value always 4 %i" % randomize)
+#game.send_game_command("pukename set_value always 4 %i" % randomize)
 
 
 
@@ -186,27 +186,89 @@ def smooth(seg, n):
     return seg
     return np.where(seg[:-n-disp,:]==seg[n+disp:,:],seg[:-n,:],seg[:-disp,:])
 
-f = open('imagenumber.txt','r+')
-image_number = int(f.read())
+#f1 = open('imagenumber.txt','a')
+#image_number = int(f1.read())
+
+class FieldCollector:
+
+    def __init__(self, h5file, name, shape=[], dtype=float):
+        self.shape = shape
+        self.name = name
+        self.f = h5file
+        self.dtype = dtype
+        if name not in self.f.keys():
+            self.f.create_dataset(name, [0]+list(shape), dtype, maxshape=[None]+list(shape))
+        self.dataset = self.f[name]
+        self.count = len(self.f[name])
+
+    def append(self, value):
+        if len(self.shape)==0 or list(self.shape)==list(value.shape):
+            self.dataset.resize([self.count+1]+list(self.shape))
+            self.dataset[self.count, :len(value)]=value
+            self.count+=1
+            print(self.count)
+
+
+class DoomCollector:
+
+    def __init__(self, filename, screen_shape, max_entities=30):
+        self.filename = filename
+        self.f = h5py.File(filename, 'a')
+        self.depths = FieldCollector(self.f, 'depth', screen_shape)
+        self.screens = FieldCollector(self.f, 'screen', screen_shape)
+        self.bboxes = FieldCollector(self.f, 'bboxes', [max_entities, 4])
+        self.names = FieldCollector(self.f, 'labels', [max_entities], dtype='S15')
+        self.max_entities=max_entities
+
+    def add_entities(self, labels):
+        bboxes = np.zeros((self.max_entities, 4))
+        names = np.zeros((self.max_entities), dtype='S15')
+        for idx, l in enumerate(labels):
+            if idx >= self.max_entities:
+                break
+            bboxes[idx] = [l.y, l.x, l.width, l.height]
+            names[idx] = np.string_(l.object_name)
+            
+        self.bboxes.append(bboxes)
+        self.names.append(names)
+        return names, bboxes
+
+dc = DoomCollector('dataset.f5', [160,120])
+j = 0
 for i in range(episodes):
     print("Episode #" + str(i + 1))
 
     game.new_episode()
     while not game.is_episode_finished():
         state = game.get_state()
+
+        #print("Player position X:", state.game_variables[0], "Y:", state.game_variables[1], "Z:", state.game_variables[2])
+        
+
+
         sc = state.screen_buffer
         lb = state.labels_buffer
+        if j % 5 == 0:
+            dc.add_entities(state.labels)
+            resized_sc =  cv2.resize(sc, (120, 160))
+            dc.screens.append(resized_sc)
+
+            d = state.depth_buffer
+            resized_d =  cv2.resize(d, (120, 160) )
+            dc.depths.append(resized_d)
+
+        j = j + 1
         #cv2.imshow('labels',state.labels_buffer)
         #cv2.imshow('depth',state.depth_buffer)
-        cv2.imshow('entities',show_entities(sc,lb))
+        #cv2.imshow('entities',show_entities(sc,lb))
         #cv2.imwrite("training-data/training"+ str(image_number) +".png", sc)
-        image_number = image_number + 1
+        
         # cv2.imshow('map',state.automap_buffer)
         # cv2.imshow('seg', lel(d))
         # cv2.imshow('ff', flood_fill(d,[0,0],fill_val=200).astype(np.uint8))
         # plt.imshow(flood_fill(d,[0,0], fill_val=200))
-        # plt.show()W
-        d = state.depth_buffer
+        # plt.show()
+        
         def lel(d, n=20):
             seg = segment(d,n)*200
             return smooth(seg,20).astype(np.uint8)
@@ -231,8 +293,8 @@ for i in range(episodes):
 
 game.close()
 cv2.destroyAllWindows()
-wr = open('imagenumber.txt', 'w')
-wr.write(str(image_number))
+# wr = open('imagenumber.txt', 'w')
+# wr.write(str(image_number))
 
 
 
