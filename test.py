@@ -9,12 +9,13 @@
 #####################################################################
 
 from __future__ import print_function
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import h5py
 from time import sleep
 from vizdoom import *
 import numpy as np
 import cv2
+import random
 game = DoomGame()
 
 # print = lambda *args, **kwargs : None
@@ -27,12 +28,18 @@ game = DoomGame()
 # game.load_config("../../scenarios/rocket_basic.cfg")
 # game.load_config("../../scenarios/deadly_corridor.cfg")
 game.load_config("deathmatch.cfg")
-game.set_doom_scenario_path('D3-tx_battle_99maps.wad')
+# game.set_doom_scenario_path('D3-tx_battle_99maps.wad')
+game.set_doom_scenario_path('D4-tx_battle2_99maps.wad')
+
 # game.set_doom_scenario_path('/home/tensorpro/wads/testingnd.wad')
 # game.set_sound_enabled(True)
 # game.set_doom_scenario_path('/home/tensorpro/wads/o7/tech.wad')
 # game.set_doom_scenario_path('/home/tensorpro/wads/3d/1.wad')
-game.set_doom_map('MAP49')
+
+map_num = random.randint(0, 100)
+if map_num < 10:
+    map_num = "0" + str(map_num)
+game.set_doom_map('MAP' + str(map_num))
 # game.load_config("../../scenarios/defend_the_center.cfg")
 # game.load_config("../../scenarios/defend_the_line.cfg")
 # game.load_config("../../scenarios/health_gathering.cfg")
@@ -43,7 +50,7 @@ game.set_doom_map('MAP49')
 # Enables freelook in engine
 game.add_game_args("+freelook 1"
                    "+sv_noautoaim 1 ")
-
+#game.set_render_hud(True)
 def is_corner(d, i, j):
     return d[i,j] not in (d[i-1,j], d[i,j-1], d[i,j+1], d[i+1,j])
 
@@ -202,6 +209,7 @@ class FieldCollector:
         self.count = len(self.f[name])
 
     def append(self, value):
+        # assert(list(self.shape) == list(value.shape))
         if len(self.shape)==0 or list(self.shape)==list(value.shape):
             self.dataset.resize([self.count+1]+list(self.shape))
             self.dataset[self.count, :len(value)]=value
@@ -215,7 +223,7 @@ class DoomCollector:
         self.filename = filename
         self.f = h5py.File(filename, 'a')
         self.depths = FieldCollector(self.f, 'depth', screen_shape)
-        self.screens = FieldCollector(self.f, 'screen', screen_shape)
+        self.screens = FieldCollector(self.f, 'screen', screen_shape  + [3])
         self.bboxes = FieldCollector(self.f, 'bboxes', [max_entities, 4])
         self.names = FieldCollector(self.f, 'labels', [max_entities], dtype='S15')
         self.max_entities=max_entities
@@ -233,7 +241,7 @@ class DoomCollector:
         self.names.append(names)
         return names, bboxes
 
-dc = DoomCollector('dataset.f5', [160,120])
+dc = DoomCollector('dataset.h5', [160,120])
 j = 0
 for i in range(episodes):
     print("Episode #" + str(i + 1))
@@ -248,9 +256,10 @@ for i in range(episodes):
 
         sc = state.screen_buffer
         lb = state.labels_buffer
-        if j % 5 == 0:
+        if j % 5 == 0 and len(state.labels) > 1:
             dc.add_entities(state.labels)
             resized_sc =  cv2.resize(sc, (120, 160))
+            print(resized_sc.shape)
             dc.screens.append(resized_sc)
 
             d = state.depth_buffer
