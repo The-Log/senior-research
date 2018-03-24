@@ -29,7 +29,7 @@ game = DoomGame()
 # game.load_config("../../scenarios/deadly_corridor.cfg")
 game.load_config("deathmatch.cfg")
 # game.set_doom_scenario_path('D3-tx_battle_99maps.wad')
-game.set_doom_scenario_path('D4-tx_battle2_99maps.wad')
+game.set_doom_scenario_path('scenarios/D4-tx_battle2_99maps.wad')
 
 # game.set_doom_scenario_path('/home/tensorpro/wads/testingnd.wad')
 # game.set_sound_enabled(True)
@@ -40,6 +40,7 @@ map_num = random.randint(0, 100)
 if map_num < 10:
     map_num = "0" + str(map_num)
 game.set_doom_map('MAP' + str(map_num))
+
 # game.load_config("../../scenarios/defend_the_center.cfg")
 # game.load_config("../../scenarios/defend_the_line.cfg")
 # game.load_config("../../scenarios/health_gathering.cfg")
@@ -241,7 +242,7 @@ class DoomCollector:
         self.names.append(names)
         return names, bboxes
 
-dc = DoomCollector('dataset.h5', [160,120])
+dc = DoomCollector('1frame.h5', [160,120])
 j = 0
 for i in range(episodes):
     print("Episode #" + str(i + 1))
@@ -256,7 +257,8 @@ for i in range(episodes):
 
         sc = state.screen_buffer
         lb = state.labels_buffer
-        if j % 5 == 0 and len(state.labels) > 1:
+        #if j % 5 == 0 and len(state.labels) > 1:
+        if j == 100 and len(state.labels) > 1:
             dc.add_entities(state.labels)
             resized_sc =  cv2.resize(sc, (120, 160))
             print(resized_sc.shape)
@@ -265,7 +267,8 @@ for i in range(episodes):
             d = state.depth_buffer
             resized_d =  cv2.resize(d, (120, 160) )
             dc.depths.append(resized_d)
-
+        elif j == 100:
+            print('redo')
         j = j + 1
         #cv2.imshow('labels',state.labels_buffer)
         #cv2.imshow('depth',state.depth_buffer)

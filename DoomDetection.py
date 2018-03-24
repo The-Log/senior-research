@@ -22,7 +22,7 @@ def scale_vals(bb, h, w):
     return (bb)
 
 class DoomDetection(data.Dataset):
-    def __init__(self, f = h5py.File('dataset.h5', 'r'), dataset_name='DOOM-TS'):
+    def __init__(self, f = h5py.File('1frame.h5', 'r'), dataset_name='DOOM-TS'):
         self.f = f
         self.names = f['labels']
         self.bboxes = f['bboxes']
