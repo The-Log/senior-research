@@ -1,4 +1,4 @@
-% Created 2018-03-11 Sun 00:26
+% Created 2018-04-01 Sun 18:24
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -264,9 +264,17 @@ score the image accordingly.
 \label{sec-3-2}
 \subsubsection{Strides}
 \label{sec-3-2-1}
-$\frac{N-F}{stride} + 1$
+$Output Size = \frac{N-F}{stride} + 1$
 \subsubsection{Padding}
 \label{sec-3-2-2}
 Adding zero padded border for convenience as each layer stays the same dimensions and also the dimensions dont get smaller.
+\subsection{Pooling Layers}
+\label{sec-3-3}
+Make input volume smaller and more managable, by down sampling.
+\subsubsection{Max Pooling}
+\label{sec-3-3-1}
+Takes the max of each filtered section and downsizes. Also can use average where it finds the average of each section and downsizes.
+\subsection{Fully Connected Layers}
+\label{sec-3-4}
 % Emacs 25.2.2 (Org mode 8.2.10)
 \end{document}

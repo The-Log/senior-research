@@ -5,11 +5,13 @@ from time import sleep
 from agents import *
 
 game = DoomGame()
-game.set_doom_scenario_path("scenarios/basic.wad")
+game.set_doom_scenario_path('scenarios/D3-tx_battle_99maps.wad')
+# game.set_doom_scenario_path("scenarios/basic.wad")
 game.set_doom_map("MAP01")
 # game.set_screen_resolution(ScreenResolution.RES_640X480)
 game.set_screen_resolution(ScreenResolution.RES_1920X1080)
 game.set_screen_format(ScreenFormat.RGB24)
+#game.load_config("scenarios/deathmatch.cfg")
 
 
 game.set_depth_buffer_enabled(True)
@@ -27,6 +29,7 @@ game.set_render_effects_sprites(False)  # Smoke and blood
 game.set_render_messages(False)  # In-game messages
 game.set_render_corpses(False)
 game.set_render_screen_flashes(True)  # Effect upon taking damage or picking up items
+game.set_ticrate(100)  # Effect upon taking damage or picking up items
 
 # Adds buttons that will be allowed.
 for i in buttons:
@@ -39,12 +42,14 @@ game.add_game_args("+freelook 1"
 
 # Adds game variables that will be included in state.
 game.add_available_game_variable(GameVariable.AMMO2)
+game.add_available_game_variable(GameVariable.HEALTH)
 
-game.set_episode_timeout(200)
+# game.set_episode_timeout(200)
 
 game.set_episode_start_time(10)
 
 game.set_window_visible(True)
+game.set_render_hud(True)
 # game.set_sound_enabled(True)
 # Sets the livin reward (for each move) to -1
 # game.set_living_reward(-1)
@@ -104,10 +109,10 @@ for i in range(episodes):
         # r = game.get_last_reward()
 
         # Prints state's game variables and reward.
-        print("State #" + str(n))
-        print("Game variables:", vars)
-        print("Reward:", r)
-        print("=====================")
+        #print("State #" + str(n))
+        #print("Game variables:", vars)
+        #print("Reward:", r)
+        #print("=====================")
 
         if sleep_time > 0:
             sleep(sleep_time)
